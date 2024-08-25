@@ -15,35 +15,38 @@ router.post("/jobs", jwtAuth, (req, res) => {
   if (user.type != "recruiter") { res.status(401).json({ message: "You don't have permissions to add jobs", });
     return; }
   const data = req.body;
-  let job = new Job({ userId: user._id, title: data.title, dateOfPosting: data.dateOfPosting, deadline: data.deadline,
+  let job = new Job({ userId: user._id, title: data.title, dateOfPosting: data.dateOfPosting, deadline: data.deadline,skillsets: data.skillsets,
                       jobType: data.jobType, duration: data.duration, salary: data.salary });
   job.save().then(() => { res.json({ message: "Job added successfully to the database" }) })
     .catch((err) => { res.status(400).json(err) });
 });
 router.get("/jobs", jwtAuth, (req, res) => {
-  let arr = [{
+  let user = req.user;
+  let findParams = {};
+  if (user.type === "recruiter" && req.query.myjobs) {
+    findParams = { ...findParams, userId: user._id };
+  }
+  if (req.query.q) {
+    findParams = {...findParams, title: { $regex: new RegExp(req.query.q, "i") },
+    };
+  }
+arr = [{
       $lookup: {
         from: "recruiterinfos",
         localField: "userId",
         foreignField: "userId",
         as: "recruiter",
-      }}, { $unwind: "$recruiter" }
+      },
+    },{ $unwind: "$recruiter" },
+    { $match: findParams }
   ];
-  Job.aggregate(arr).then((posts) => {
-      if (posts == null || posts.length === 0) {
+  Job.aggregate(arr)
+    .then((posts) => {
+      if (posts == null) {
         res.status(404).json({ message: "No job found" });
-        return; }
+        return;}
       res.json(posts);
-    }).catch((err) =>{ res.status(400).json(err) });
-});
-
-router.get("/jobs/:id", jwtAuth, (req, res) => {
-  Job.findOne({ _id: req.params.id }).then((job) => {
-      if (job == null) { res.status(400).json({ message: "Job does not exist", });
-        return; }
-      res.json(job);
-    })
-    .catch((err) => {res.status(400).json(err); });
+    }).catch((err) => { res.status(400).json(err) });
 });
 
 router.put("/jobs/:id", jwtAuth, (req, res) => {
@@ -137,6 +140,7 @@ router.put("/user", jwtAuth, (req, res) => {
         if (data.name) { jobApplicant.name = data.name; }
         if (data.education) { jobApplicant.education = data.education; }
         if (data.skills) { jobApplicant.skills = data.skills; }
+        if (data.resume) { jobApplicant.resume = data.resume;}
         if (data.profile) {jobApplicant.profile = data.profile; }
         jobApplicant.save().then(() => { res.json({ message: "User information updated successfully", }); })
           .catch((err) => { res.status(400).json(err) });
@@ -296,27 +300,23 @@ router.put("/applications/:id", jwtAuth, (req, res) => {
   }});
 
 router.get("/applicants", jwtAuth, (req, res) => {
-  console.log('Query Parameters:', req.query);
   const user = req.user;
   if (user.type === "recruiter") {
     let findParams = { recruiterId: user._id };
     console.log('Query Parameters:', req.query);
     if (req.query.jobId) {
-      findParams = {
-        ...findParams,
-        jobId: new mongoose.Types.ObjectId(req.query.jobId),
+      findParams = {...findParams,
+        jobId: new mongoose.Types.ObjectId(req.query.jobId)
       };
     }
     if (req.query.status) {
       if (Array.isArray(req.query.status)) {
-        findParams = {
-          ...findParams,
-          status: { $in: req.query.status },
+        findParams = {...findParams,
+          status: { $in: req.query.status }
         };
       } else {
-        findParams = {
-          ...findParams,
-          status: req.query.status,
+        findParams = { ...findParams,
+          status: req.query.status
         };
       }
     }
@@ -344,106 +344,3 @@ router.get("/applicants", jwtAuth, (req, res) => {
   } else { res.status(400).json({ message: "You are not allowed to access applicants list" }); }
 });
 module.exports = router;
-/*router.get("/applicants", jwtAuth, (req, res) => {
-  const user = req.user;
-  if (user.type === "recruiter") {
-    let findParams = {
-      recruiterId: user._id,
-    };
-    if (req.query.jobId) {
-      findParams = {
-        ...findParams,
-        jobId: new mongoose.Types.ObjectId(req.query.jobId),
-      };
-    }
-    if (req.query.status) {
-      if (Array.isArray(req.query.status)) {
-        findParams = {
-          ...findParams,
-          status: { $in: req.query.status },
-        };
-      } else {
-        findParams = {
-          ...findParams,
-          status: req.query.status,
-        };
-      }
-    }
-    let sortParams = {};
-
-    if (!req.query.asc && !req.query.desc) {
-      sortParams = { _id: 1 };
-    }
-
-    if (req.query.asc) {
-      if (Array.isArray(req.query.asc)) {
-        req.query.asc.map((key) => {
-          sortParams = {
-            ...sortParams,
-            [key]: 1,
-          };
-        });
-      } else {
-        sortParams = {
-          ...sortParams,
-          [req.query.asc]: 1,
-        };
-      }
-    }
-
-    if (req.query.desc) {
-      if (Array.isArray(req.query.desc)) {
-        req.query.desc.map((key) => {
-          sortParams = {
-            ...sortParams,
-            [key]: -1,
-          };
-        });
-      } else {
-        sortParams = {
-          ...sortParams,
-          [req.query.desc]: -1,
-        };
-      }
-    }
-
-    Application.aggregate([
-      {
-        $lookup: {
-          from: "jobapplicantinfos",
-          localField: "userId",
-          foreignField: "userId",
-          as: "jobApplicant",
-        },
-      },
-      { $unwind: "$jobApplicant" },
-      {
-        $lookup: {
-          from: "jobs",
-          localField: "jobId",
-          foreignField: "_id",
-          as: "job",
-        },
-      },
-      { $unwind: "$job" },
-      { $match: findParams },
-      { $sort: sortParams },
-    ])
-      .then((applications) => {
-        if (applications.length === 0) {
-          res.status(404).json({
-            message: "No applicants found",
-          });
-          return;
-        }
-        res.json(applications);
-      })
-      .catch((err) => {
-        res.status(400).json(err);
-      });
-  } else {
-    res.status(400).json({
-      message: "You are not allowed to access applicants list",
-    });
-  }
-}); */

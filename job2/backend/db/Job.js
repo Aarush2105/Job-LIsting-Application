@@ -9,6 +9,7 @@ let schema = new mongoose.Schema({
           msg: "deadline should be greater than dateOfPosting"
         }]
     },
+    skillsets: [String],
     jobType: { type: String, required: true},
     duration: { type: Number, min: 0,
       validate: [{validator: Number.isInteger,
