@@ -31,7 +31,7 @@ const JobTile = (props) => {
   };
   const deadline = new Date(job.deadline).toLocaleDateString();
   return (
-    <Card>
+    <Card style={{width:"100%"}}>
       <Grid container>
         <Grid container item xs={9} spacing={1} direction="column">
           <h2>{job.title}</h2>
@@ -88,14 +88,14 @@ const Home = (props) => {
         setPopup({ open: true, severity: "error", message: "Error pata nhi" }) });
   };
   return (
-      <Grid style={{ padding: "30px", minHeight: "93vh" }}>
+      <Grid style={{ padding: "30px", minHeight: "93vh",width: "80%"}}>
           <h1 style= {{textAlign:"center"}}> Jobs </h1>
           <TextField label="Search Jobs" value={searchOptions.query} onChange={(event) => setSearchOptions({ ...searchOptions, query: event.target.value })}
-              onKeyPress={(ev) => { if (ev.key === "Enter") { getData() } }} style={{ width: "500px" }} variant="outlined" />
+              onKeyPress={(ev) => { if (ev.key === "Enter") { getData() } }} style={{ width: "100%" }} variant="outlined" />
         <Grid container item xs direction="column" alignItems="stretch" justify="center" >
           {jobs.length > 0 ? (
             jobs.map((job) => { return <JobTile job={job} />; })
-          ) : (<h5 style={{ textAlign: "center" }}> No jobs found </h5>)}
+          ) : (<h5 style={{ textAlign: "center" }}><b><i> No jobs found </i></b></h5>)}
         </Grid>
       </Grid>
   );

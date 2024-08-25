@@ -120,11 +120,15 @@ const JobTile = (props) => {
 };
 const MyJobs = (props) => {
   const [jobs, setJobs] = useState([]);
+  const [searchOptions, setSearchOptions] = useState({ query: "" });
   const setPopup = useContext(SetPopupContext);
   useEffect(() => { getData(); }, []);
 
   const getData = () => {
     let searchParams = [`myjobs=1`];
+    if (searchOptions.query !== "") {
+      searchParams = [...searchParams, `q=${searchOptions.query}`];
+    }
     const queryString = searchParams.join("&");
     let address = apiList.jobs;
     if (queryString !== "") {
@@ -145,6 +149,8 @@ const MyJobs = (props) => {
   return (
       <Grid container direction="column" style={{ padding: "30px", minHeight: "93vh" }}>
         <h1 style={{textAlign:"center"}}>My Jobs</h1>
+        <TextField label="Search Jobs" value={searchOptions.query} onChange={(event) => setSearchOptions({ ...searchOptions, query: event.target.value })}
+              onKeyPress={(ev) => { if (ev.key === "Enter") { getData() } }} style={{ width: "100%" }} variant="outlined" />
         <Grid container direction="column">
           {jobs.length > 0 ? (
             jobs.map((job) => {return <JobTile job={job} getData={getData} />;})

@@ -48,7 +48,7 @@ const ApplicationTile = (props) => {
   };
   return (
     <Card>
-      <Grid container>
+      <Grid container style={{justifyContent:"space-between"}}>
         <Grid xs={7} direction="column">
             <h4> {application.jobApplicant.name}</h4>
           <Grid item>Job Title: {application.job.title}</Grid>
@@ -83,7 +83,7 @@ const AcceptedApplicants = (props) => {
     if (queryString !== "") {
       address = `${address}?${queryString}`;
     }
-    console.log(address);
+    
     axios.get(address, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}`}})
       .then((response) => { 
@@ -100,13 +100,14 @@ const AcceptedApplicants = (props) => {
   };
   return (
     <>
-      <h2>Employees</h2>
+    <h2 style={{paddingBottom:""}}>Employees</h2>
+    <>
       <div style={{ width: "90%" }}>
         {applications.length > 0 ? (applications.map((obj) => (
           <ApplicationTile application={obj} getData={getData} />))
           ) : (<h4 style={{ textAlign: "center" }}> No Applications Found </h4>)}
       </div>
-      
+      </>
     </>);
 };
 

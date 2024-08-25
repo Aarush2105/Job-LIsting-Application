@@ -4,6 +4,7 @@ import axios from "axios";
 import Card from "../Card";
 import { SetPopupContext } from "../../App";
 import apiList from "../../lib/apiList";
+
 const CreateJobs = (props) => {
   const setPopup = useContext(SetPopupContext);
 
@@ -22,7 +23,6 @@ const CreateJobs = (props) => {
   };
 
   const handleUpdate = () => {
-    console.log(jobDetails);
     axios.post(apiList.jobs, jobDetails, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

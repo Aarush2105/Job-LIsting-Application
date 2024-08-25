@@ -67,9 +67,7 @@ function App() {
               <Route exact path="/profile">
                 {userType() === "recruiter" ? (
                   <RecruiterProfile />
-                ) : (
-                  <Profile />
-                )}
+                ) : ( <Profile /> )}
               </Route>
               <Route exact path="/addjob">
                 <CreateJobs />

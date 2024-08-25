@@ -3,7 +3,7 @@ import { TextField } from "@material-ui/core";
 const EmailInput = (props) => {
   const { label,value,onChange, inputErrorHandler, handleInputError, required, className } = props;
   return (
-    <TextField style={{width:"400px"}} label={label} variant="outlined" value={value} onChange={onChange} helperText={inputErrorHandler.email.message}
+    <TextField style={{width:"90%"}} label={label} variant="outlined" value={value} onChange={onChange} helperText={inputErrorHandler.email.message}
       onBlur={(event) => {
         if (event.target.value === "") {
           if (required) {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, TextField } from "@material-ui/core";
 import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -73,25 +73,24 @@ const Profile = (props) => {
       });
   };
   return (
-      <div>
-        <h2>Profile</h2>
-          <Card>
-            <Grid container direction="column" alignItems="stretch" spacing={3}>
-                <textarea placeholder="Name" value={profileDetails.name}
+      <div style={{ width: "80%" }}>
+        <h2 style={{textAlign:"center"}}>Profile</h2>
+          <Card >
+            <Grid container direction="column" alignItems="stretch" spacing={3} >
+                <TextField label="Name" value={profileDetails.name} variant="outlined"
                   onChange={(event) => handleInput("name", event.target.value)}>
-                </textarea>
-                <textarea placeholder="Bio (upto 250 words)" multiline rows={8} style={{ width: "300px" }} value={profileDetails.bio}
-                  onChange={(event) => {
-                    if (
-                      event.target.value.split(" ").filter(function (n) {
+                </TextField>
+                <TextField label="Bio (upto 250 words)" multiline rows={8} style={{ width: "100%" }} value={profileDetails.bio}
+                  variant="outlined" onChange={(event) => {
+                    if ( event.target.value.split(" ").filter(function (n) {
                         return n != "";
                       }).length <= 250
                     ) { handleInput("bio", event.target.value);}
                   }}
-                ></textarea>
-                <PhoneInput country={"in"} value={phone} onChange={(phone) => setPhone(phone)} style={{ width: "auto" }} />
+                ></TextField>
+                <PhoneInput country={"in"} value={phone} onChange={(phone) => setPhone(phone)} style={{width: "100%" }} />
             </Grid>
-            <Button color="primary" style={{ padding: "10px 50px", marginTop: "30px" }} onClick={() => handleUpdate()} >
+            <Button color="primary" style={{ padding: "10px 50px", marginTop: "30px",textAlign:"center",width: "100%" }} onClick={() => handleUpdate()} >
               Update Details</Button>
           </Card>
       </div>

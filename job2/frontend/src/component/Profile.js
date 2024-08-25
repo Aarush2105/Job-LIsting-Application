@@ -3,8 +3,9 @@ import { Button, Grid, TextField } from "@material-ui/core";
 import axios from "axios";
 import Card from "./Card";
 import { SetPopupContext } from "../App";
+import DescriptionIcon from "@material-ui/icons/Description";
 import apiList from "../lib/apiList";
-
+import FileUploadInput from "../lib/FileUploadInput";
 const Profile = (props) => {
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
@@ -14,12 +15,12 @@ const Profile = (props) => {
       institutionName: "",
       startYear: "",
       endYear: "",
+      resume: "",
     },
-    profile: "",
+    profile: ""
   });
   const handleInput = (key, value) => {
-    setProfileDetails({
-      ...profileDetails, [key]: value });
+    setProfileDetails({ ...profileDetails, [key]: value });
   };
   useEffect(() => { getData() }, []);
   const getData = () => {
@@ -89,6 +90,8 @@ const Profile = (props) => {
                     handleInput("education", { ...profileDetails.education, endYear: event.target.value })
                   }
                   variant="outlined" type="number" fullWidth />
+                  <FileUploadInput label="Resume (.pdf)" icon={<DescriptionIcon />} uploadTo={apiList.uploadResume} handleInput={handleInput}
+                  identifier={"resume"}/>
             </Grid>
             <Button color="primary" style={{ padding: "10px 50px", marginTop: "30px" }} onClick={() => handleUpdate()} >
               Update Details </Button>

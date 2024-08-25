@@ -8,21 +8,21 @@ const Navbar = (props) => {
   return (
     <AppBar position="fixed">
       <Toolbar style={{background:"blue"}}>
-        <h4 style={{flexGrow:1}}> Job Portal </h4>
+        <h3 style={{flexGrow:1}}><b><i>Career Gate</i></b></h3>
         {isAuth() ? ( userType() === "recruiter" ? (
             <>
               <Button color="inherit" onClick={() => handleClick("/home")}>
-                Home </Button>
+                <b>Home</b> </Button>
               <Button color="inherit" onClick={() => handleClick("/addjob")}>
-                Add Jobs </Button>
+              <b>Add Jobs</b> </Button>
               <Button color="inherit" onClick={() => handleClick("/myjobs")}>
-                My Jobs </Button>
+              <b>My Jobs </b></Button>
               <Button color="inherit" onClick={() => handleClick("/employees")}>
-                Employees </Button>
+              <b>Employees</b> </Button>
               <Button color="inherit" onClick={() => handleClick("/profile")}>
-                Profile </Button>
+              <b>Profile</b> </Button>
               <Button color="inherit" onClick={() => handleClick("/logout")}>
-                Logout </Button>
+              <b>Logout</b> </Button>
             </>) : (
             <>
               <Button color="inherit" onClick={() => handleClick("/home")}>

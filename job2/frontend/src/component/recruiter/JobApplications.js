@@ -78,19 +78,14 @@ const ApplicationTile = (props) => {
   };
   return (
     <Card>
-      <Grid container>
+      <Grid container style={{justifyContent:"space-between"}}>
         <Grid item xs={7} >
           <h4>{application.jobApplicant.name} </h4>
           <div>Applied On: {appliedOn.toLocaleDateString()}</div>
           <div>
-            Education:{" "}
-            {application.jobApplicant.education
-              .map((edu) => {
-                return `${edu.institutionName} (${edu.startYear}-${
-                  edu.endYear ? edu.endYear : "Ongoing"
-                })`;
-              })
-              .join(", ")}
+            Education:{`${application.jobApplicant.institutionName} (${application.jobApplicant.startYear}-${
+                  application.jobApplicant.endYear ? application.jobApplicant.endYear : "Ongoing"
+                })`}
           </div>
           <div> SOP: {application.sop !== "" ? application.sop : "Not Submitted"} </div>
         </Grid>
@@ -123,10 +118,8 @@ const JobApplications = (props) => {
   useEffect(() => {
     getData();
   }, []);
-
   const getData = () => {
     let searchParams = [];
-
     if (searchOptions.status.rejected) {
       searchParams = [...searchParams, `status=rejected`];
     }
@@ -136,21 +129,7 @@ const JobApplications = (props) => {
     if (searchOptions.status.shortlisted) {
       searchParams = [...searchParams, `status=shortlisted`];
     }
-    let asc = [],
-      desc = [];
-    Object.keys(searchOptions.sort).forEach((obj) => {
-      const item = searchOptions.sort[obj];
-      if (item.status) {
-        if (item.desc) {
-          desc = [...desc, `desc=${obj}`];
-        } else {
-          asc = [...asc, `asc=${obj}`];
-        }
-      }
-    });
-    searchParams = [...searchParams, ...asc, ...desc];
     const queryString = searchParams.join("&");
-    console.log(queryString);
     let address = `${apiList.applicants}?jobId=${jobId}`;
     if (queryString !== "") {
       address = `${address}&${queryString}`;
@@ -166,13 +145,13 @@ const JobApplications = (props) => {
         setPopup({
           open: true,
           severity: "error",
-          message: err.response.data.message,
+          message: err,
         });
       });
   };
   return (
       <Grid container style={{ padding: "30px" }} >
-        <h1 style= {{textAlign:"center"}}>Applications</h1>
+        <h1 style= {{textAlign:"center", width:"100%", marginTop:"auto"}}>Applications</h1>
         <Grid style={{ width: "100%" }}>
           {applications.length > 0 ? ( applications.map((obj) => (
                 <ApplicationTile application={obj} getData={getData} />

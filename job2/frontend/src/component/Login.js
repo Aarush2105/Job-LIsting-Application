@@ -41,7 +41,7 @@ const Login = (props) => {
           history.push("/home");
         })
         .catch((err) => {
-          setPopup({ open: true, severity: "success", message: err.response.data.message });
+          setPopup({ open: true, severity: "error", message: err.response.data.message });
         });
     } else {
       setPopup({ open: true, severity: "error", message: "Incorrect Input" });

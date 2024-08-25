@@ -23,7 +23,7 @@ const PasswordInput = (props) => {
 
   return (
     <>
-      <FormControl variant="outlined" error={props.error ? props.error : null} style={{width:"400px"}}>
+      <FormControl variant="outlined" error={props.error ? props.error : null} style={{width:"90%"}}>
         <InputLabel htmlFor="outlined-adornment-password">
           {props.label}
         </InputLabel>
