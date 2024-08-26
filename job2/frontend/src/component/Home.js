@@ -1,11 +1,13 @@
 import { useState, useEffect, useContext } from "react";
-import { Button, Grid, TextField, Modal } from "@material-ui/core";
+import { Button, Grid, TextField, Modal,IconButton } from "@material-ui/core";
 import axios from "axios";
 import Card from "./Card";
 import { SetPopupContext } from "../App";
 import apiList from "../lib/apiList";
 import { userType } from "../lib/isAuth";
-
+import FilterPopup from "./filterpopup";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import { Filter, FilterList } from "@material-ui/icons";
 const JobTile = (props) => {
   const { job } = props;
   const setPopup = useContext(SetPopupContext);
@@ -61,7 +63,9 @@ const JobTile = (props) => {
 };
 const Home = (props) => {
   const [jobs, setJobs] = useState([]);
-  const [searchOptions, setSearchOptions] = useState({ query: "" });
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [searchOptions, setSearchOptions] = useState({ query: "",jobType: { fullTime: false, partTime: false, wfh: false}, salary: [0, 100], duration: "0"
+  });
   const setPopup = useContext(SetPopupContext);
   useEffect(() => { getData() }, []);
 
@@ -69,6 +73,24 @@ const Home = (props) => {
     let searchParams = [];
     if (searchOptions.query !== "") {
       searchParams = [...searchParams, `q=${searchOptions.query}`];
+    }
+    if (searchOptions.jobType.fullTime) {
+      searchParams = [...searchParams, `jobType=Full%20Time`];
+    }
+    if (searchOptions.jobType.partTime) {
+      searchParams = [...searchParams, `jobType=Part%20Time`];
+    }
+    if (searchOptions.jobType.wfh) {
+      searchParams = [...searchParams, `jobType=Work%20From%20Home`];
+    }
+    if (searchOptions.salary[0] != 0) {
+      searchParams = [ ...searchParams,`salaryMin=${searchOptions.salary[0] * 1000}`];
+    }
+    if (searchOptions.salary[1] != 100) {
+      searchParams = [...searchParams, `salaryMax=${searchOptions.salary[1] * 1000}`];
+    }
+    if (searchOptions.duration != "0") {
+      searchParams = [...searchParams, `duration=${searchOptions.duration}`];
     }
     const queryString = searchParams.join("&");
     let address = apiList.jobs;
@@ -88,16 +110,38 @@ const Home = (props) => {
         setPopup({ open: true, severity: "error", message: "Error pata nhi" }) });
   };
   return (
+    <>
       <Grid style={{ padding: "30px", minHeight: "93vh",width: "80%"}}>
           <h1 style= {{textAlign:"center"}}> Jobs </h1>
           <TextField label="Search Jobs" value={searchOptions.query} onChange={(event) => setSearchOptions({ ...searchOptions, query: event.target.value })}
               onKeyPress={(ev) => { if (ev.key === "Enter") { getData() } }} style={{ width: "100%" }} variant="outlined" />
+          <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '10vh', // Makes the div take the full height of the viewport
+    }}>
+      <IconButton color="primary" onClick={() => setFilterOpen(true)}>
+        <FilterListIcon />
+      </IconButton>
+    </div>
         <Grid container item xs direction="column" alignItems="stretch" justify="center" >
           {jobs.length > 0 ? (
             jobs.map((job) => { return <JobTile job={job} />; })
           ) : (<h5 style={{ textAlign: "center" }}><b><i> No jobs found </i></b></h5>)}
         </Grid>
       </Grid>
+      <FilterPopup
+        open={filterOpen}
+        searchOptions={searchOptions}
+        setSearchOptions={setSearchOptions}
+        handleClose={() => setFilterOpen(false)}
+        getData={() => {
+          getData();
+          setFilterOpen(false);
+        }}
+      />
+      </>
   );
 };
 export default Home;
